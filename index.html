@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Gamestall India - The premier global destination for official APKs, mobile engines, and professional creator tools. Secure, fast, and verified.">
+    <meta name="keywords" content="APK, Store, Mod, India, Gamestall, Mobile Apps, Download, GS Store, Verified APK">
+    <meta name="author" content="Gamestall India">
+    <meta name="google-site-verification" content="AHpoEvuus5UaW8NkMuQ37EICbjcOfKNKknHP4eEZtcM" />
+    <title>Gamestall India | Global App Store</title>
+
+    <!-- UI Frameworks & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://npmcdn.com/parse/dist/parse.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --brand-blue: #2A52F3;
+            --bg-black: #050505;
+            --zinc-card: #0f0f10;
+        }
+        body {
+            background-color: var(--bg-black);
+            color: #e4e4e7;
+            font-family: 'Outfit', sans-serif;
+            scroll-behavior: smooth;
+        }
+        h1, h2, h3, .font-bangers {
+            font-family: 'Bangers', cursive;
+            letter-spacing: 1.5px;
+        }
+        /* CSS-ONLY LOGO */
+        .gs-logo {
+            width: 46px; height: 46px;
+            background: #ffffff;
+            border: 3px solid var(--brand-blue);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-style: italic; color: var(--brand-blue);
+            font-size: 1.5rem; box-shadow: 0 0 20px rgba(42, 82, 243, 0.3);
+            cursor: pointer;
+        }
+        /* View Handling */
+        .view-pane { display: none; min-height: 80vh; }
+        .view-active { display: block; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .app-card {
+            background: var(--zinc-card);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .app-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--brand-blue);
+            box-shadow: 0 15px 30px rgba(42, 82, 243, 0.15);
+        }
+        input, textarea, select {
+            background: #121214 !important;
+            border: 1px solid #27272a !important;
+            color: white !important;
+        }
+        .admin-tab-control.active {
+            color: var(--brand-blue);
+            border-bottom: 3px solid var(--brand-blue);
+        }
+        .shimmer {
+            background: linear-gradient(90deg, #121214 25%, #1a1a1c 50%, #121214 75%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    </style>
+</head>
+<body class="antialiased selection:bg-blue-600 selection:text-white">
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-[100] bg-black/80 backdrop-blur-md border-b border-zinc-800 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-4 cursor-pointer group" onclick="location.hash='#home'">
+                <div class="gs-logo transition-transform group-hover:scale-105">GS</div>
+                <div class="hidden sm:block">
+                    <h1 class="text-2xl leading-none text-white tracking-wider">GAMESTALL INDIA</h1>
+                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.3em]">Official Cloud Store</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-6 text-xs font-black uppercase tracking-widest text-zinc-400">
+                <a href="#home" class="hover:text-white transition">Browse</a>
+                <a href="#submit" class="hover:text-white transition">Publish</a>
+                <a href="#admin" class="w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:text-white transition"><i class="fas fa-user-shield"></i></a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Global App Search Bar -->
+    <div class="max-w-4xl mx-auto mt-8 px-4">
+        <div class="relative group">
+            <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-blue-500 transition"></i>
+            <input type="text" id="global-search" oninput="searchApps(this.value)" placeholder="Search Apps, Engines, Mods..." class="w-full pl-14 pr-6 py-4 rounded-2xl outline-none border border-zinc-800 focus:border-blue-600 transition shadow-2xl shadow-blue-900/5">
+        </div>
+    </div>
+
+    <!-- 1. HOME VIEW -->
+    <section id="view-home" class="view-pane view-active px-4 py-12 max-w-7xl mx-auto">
+        <div id="app-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+            <div class="col-span-full py-20 opacity-30 italic">Connecting to Indian Node...</div>
+        </div>
+    </section>
+
+    <!-- 2. SUBMIT VIEW -->
+    <section id="view-submit" class="view-pane px-4 py-16 max-w-4xl mx-auto text-center md:text-left">
+        <div class="bg-zinc-900 border border-zinc-800 p-8 md:p-12 rounded-[3rem] shadow-2xl">
+            <h2 class="text-5xl font-bangers mb-6 uppercase italic">Submit APK</h2>
+            <p class="text-zinc-500 mb-10">Submit your tool for review. Ensure you include a high-quality icon.</p>
+            <form id="form-submit" class="space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <input type="text" id="sub-name" placeholder="App Name" required class="w-full px-5 py-4 rounded-2xl outline-none">
+                    <input type="text" id="sub-user" placeholder="Developer Name" required class="w-full px-5 py-4 rounded-2xl outline-none">
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <input type="url" id="sub-url" placeholder="Direct APK URL" required class="w-full px-5 py-4 rounded-2xl outline-none">
+                    <div class="flex flex-col text-left">
+                        <label class="text-[10px] font-black uppercase text-zinc-600 ml-2 mb-2">App Icon</label>
+                        <input type="file" id="sub-icon" accept="image/*" required class="w-full text-xs">
+                    </div>
+                </div>
+                <textarea id="sub-desc" placeholder="App Description" rows="4" required class="w-full px-5 py-4 rounded-2xl outline-none resize-none"></textarea>
+                <button type="submit" id="btn-submit-publish" class="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase text-xl rounded-2xl transition transform active:scale-95">Push Submission</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- 3. DOWNLOAD PAGE VIEW -->
+    <section id="view-download" class="view-pane px-4 py-12 max-w-6xl mx-auto">
+        <div id="download-page-content">
+            <!-- Data injected via JS -->
+        </div>
+    </section>
+
+    <!-- 4. ADMIN PORTAL VIEW -->
+    <section id="view-admin" class="view-pane px-4 py-12 max-w-6xl mx-auto">
+        <div id="admin-gate" class="max-w-md mx-auto py-20 text-center">
+            <h2 class="text-6xl font-bangers mb-8 uppercase italic">Admin Access</h2>
+            <input type="password" id="admin-password" placeholder="Passkey" class="w-full px-6 py-4 rounded-2xl text-center text-2xl tracking-[0.6em] font-black mb-6">
+            <button onclick="authAdmin()" class="w-full py-4 bg-white text-black font-black uppercase rounded-2xl hover:bg-zinc-200 transition">Unlock Node</button>
+        </div>
+
+        <div id="admin-dash" class="hidden">
+            <div class="flex items-center space-x-8 border-b border-zinc-800 mb-12 overflow-x-auto">
+                <button onclick="switchAdminTab('inbox')" id="btn-inbox" class="admin-tab-control active py-4 font-black uppercase text-sm tracking-widest italic whitespace-nowrap">Inbox</button>
+                <button onclick="switchAdminTab('manage')" id="btn-manage" class="admin-tab-control py-4 font-black uppercase text-sm tracking-widest italic whitespace-nowrap">Manage</button>
+                <button onclick="switchAdminTab('add')" id="btn-add" class="admin-tab-control py-4 font-black uppercase text-sm tracking-widest italic whitespace-nowrap text-brand-yellow">Add App +</button>
+            </div>
+
+            <!-- Tab: Inbox -->
+            <div id="pane-inbox" class="admin-view-pane space-y-4"></div>
+
+            <!-- Tab: Manage -->
+            <div id="pane-manage" class="admin-view-pane hidden">
+                <div id="manage-list" class="grid gap-4"></div>
+            </div>
+
+            <!-- Tab: Add New -->
+            <div id="pane-add" class="admin-view-pane hidden max-w-2xl mx-auto">
+                <div class="bg-zinc-900 p-8 rounded-[3rem] border border-zinc-800">
+                    <form id="form-admin-add" class="space-y-4">
+                        <input type="text" id="add-name" placeholder="App Name" required class="w-full px-5 py-3 rounded-xl">
+                        <input type="text" id="add-size" placeholder="Size (e.g. 85MB)" required class="w-full px-5 py-3 rounded-xl">
+                        <input type="url" id="add-url" placeholder="Download Link" required class="w-full px-5 py-3 rounded-xl">
+                        <input type="file" id="add-icon" accept="image/*" required class="w-full text-xs">
+                        <textarea id="add-desc" placeholder="Description" required class="w-full px-5 py-3 rounded-xl"></textarea>
+                        <button type="submit" id="btn-admin-publish" class="w-full py-4 bg-blue-600 text-white font-black uppercase rounded-xl shadow-lg transition transform active:scale-95">Publish Globally</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Editor Modal -->
+            <div id="editor-modal" class="fixed inset-0 z-[6000] bg-black/90 flex items-center justify-center hidden p-4">
+                <div class="max-w-2xl w-full bg-zinc-900 border border-zinc-800 p-8 rounded-[3rem] shadow-2xl">
+                    <h3 class="text-4xl font-bangers mb-6 text-blue-500 uppercase">Update Metadata</h3>
+                    <form id="form-admin-edit" class="space-y-4">
+                        <input type="hidden" id="edit-id">
+                        <input type="text" id="edit-name" placeholder="Name" required class="w-full px-5 py-3 rounded-xl">
+                        <input type="text" id="edit-size" placeholder="Size" required class="w-full px-5 py-3 rounded-xl">
+                        <input type="url" id="edit-url" placeholder="Download Link" required class="w-full px-5 py-3 rounded-xl">
+                        <div class="flex flex-col text-left">
+                            <label class="text-[10px] font-black uppercase text-zinc-600 ml-2 mb-2">Update Icon (Leave empty to keep current)</label>
+                            <input type="file" id="edit-icon" accept="image/*" class="w-full text-xs">
+                        </div>
+                        <textarea id="edit-desc" placeholder="Description" rows="3" required class="w-full px-5 py-3 rounded-xl"></textarea>
+                        <div class="flex gap-4">
+                            <button type="submit" class="flex-1 py-4 bg-blue-600 text-white font-black uppercase rounded-xl">Save Changes</button>
+                            <button type="button" onclick="closeEditor()" class="px-8 py-4 bg-zinc-800 text-white font-black uppercase rounded-xl">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-20 border-t border-zinc-900 text-center opacity-30 hover:opacity-100 transition-opacity">
+        <div class="gs-logo mx-auto mb-6 grayscale pointer-events-none">GS</div>
+        <p class="text-[10px] font-black uppercase tracking-[0.5em] mb-4">&copy; 2024 Gamestall India Cloud Infrastructure</p>
+        <a href="#admin" class="text-[9px] font-bold text-blue-500 hover:underline uppercase tracking-widest">Admin Portal Access</a>
+    </footer>
+
+    <script>
+        // 1. CONFIGURATION
+        Parse.initialize("gdp56t0SntfY059QN1BorjF7kU5NPymP88qWas09", "P4dQ9BClDIOXDJVmuL0OhLtdX2w0pgnfGiYwgGyu");
+        Parse.serverURL = 'https://parseapi.back4app.com/';
+
+        let appsCache = [];
+        let currentEditId = null;
+
+        // 2. ROUTER
+        const routeManager = () => {
+            const hash = window.location.hash || '#home';
+            document.querySelectorAll('.view-pane').forEach(v => v.classList.remove('view-active'));
+            
+            if(hash.startsWith('#app/')) {
+                const appId = hash.split('/')[1];
+                renderDownloadPage(appId);
+                document.getElementById('view-download').classList.add('view-active');
+            } else {
+                const target = document.getElementById(`view-${hash.substring(1)}`) || document.getElementById('view-home');
+                if(target) target.classList.add('view-active');
+            }
+            
+            if(hash === '#home') fetchApps();
+        };
+
+        window.addEventListener('hashchange', routeManager);
+        window.addEventListener('load', routeManager);
+
+        // Utility: Convert File to Base64
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+
+        // 3. FETCH DATA
+        async function fetchApps() {
+            const grid = document.getElementById('app-grid');
+            try {
+                const query = new Parse.Query("AppDatabase");
+                query.descending("createdAt");
+                appsCache = await query.find();
+                grid.innerHTML = appsCache.map(app => {
+                    const d = app.attributes;
+                    return `
+                        <div class="app-card rounded-[2.5rem] p-6 flex flex-col group">
+                            <img src="${d.icon || 'https://via.placeholder.com/150/121214/FFFFFF?text=APK'}" class="w-16 h-16 rounded-2xl mb-6 object-cover shadow-2xl transition group-hover:scale-110">
+                            <h3 class="text-2xl text-white italic font-bangers mb-1 uppercase truncate text-left">${d.name}</h3>
+                            <div class="flex gap-2 mb-4 justify-start">
+                                <span class="text-[9px] font-black bg-blue-600 text-white px-2 py-0.5 rounded uppercase">${d.size || '60MB'}</span>
+                                <span class="text-[9px] font-black border border-zinc-800 text-zinc-600 px-2 py-0.5 rounded uppercase">Verified</span>
+                            </div>
+                            <button onclick="location.hash='#app/${app.id}'" class="mt-auto py-3 bg-white text-black font-black rounded-xl hover:bg-blue-600 hover:text-white transition uppercase text-[10px] tracking-widest italic">Download</button>
+                        </div>`;
+                }).join('');
+            } catch (e) { grid.innerHTML = "Sync error."; }
+        }
+
+        function searchApps(val) {
+            const query = val.toLowerCase();
+            const grid = document.getElementById('app-grid');
+            const filtered = appsCache.filter(a => a.get('name').toLowerCase().includes(query));
+            grid.innerHTML = filtered.map(app => `
+                <div class="app-card rounded-[2.5rem] p-6 flex flex-col">
+                    <h3 class="text-2xl text-white font-bangers mb-4 truncate">${app.get('name')}</h3>
+                    <button onclick="location.hash='#app/${app.id}'" class="mt-auto py-3 bg-white text-black font-black rounded-xl uppercase text-[10px]">Download</button>
+                </div>`).join('') || `<p class="col-span-full py-10 opacity-30 italic">No matches.</p>`;
+        }
+
+        // 4. DOWNLOAD PAGE RENDER
+        async function renderDownloadPage(id) {
+            const container = document.getElementById('download-page-content');
+            container.innerHTML = `<p class="py-20 text-center animate-pulse opacity-50 italic">Syncing node...</p>`;
+            
+            try {
+                const query = new Parse.Query("AppDatabase");
+                const app = await query.get(id);
+                const d = app.attributes;
+                container.innerHTML = `
+                    <div class="flex flex-col lg:flex-row gap-16 items-center lg:items-start text-center md:text-left">
+                        <img src="${d.icon || ''}" class="w-64 h-64 rounded-[4rem] shadow-2xl border-4 border-white/5 object-cover">
+                        <div class="flex-1">
+                            <h2 class="text-8xl text-white font-bangers italic leading-none mb-6">${d.name}</h2>
+                            <div class="flex flex-wrap justify-center md:justify-start gap-4 mb-10">
+                                <div class="bg-zinc-900 px-6 py-2 rounded-xl border border-zinc-800 font-bold uppercase text-xs">Size: ${d.size || '60MB'}</div>
+                                <div class="bg-zinc-900 px-6 py-2 rounded-xl border border-zinc-800 font-bold uppercase text-xs text-green-500 tracking-widest">Verified Safe</div>
+                            </div>
+                            <p class="text-zinc-400 text-xl leading-relaxed mb-12 italic border-l-4 border-blue-600 pl-8">${d.desc}</p>
+                            <div class="flex flex-col sm:flex-row gap-6">
+                                <a href="${d.download}" target="_blank" class="flex-1 py-6 bg-blue-600 text-white font-black text-center rounded-[2rem] uppercase tracking-widest text-xl shadow-xl hover:bg-blue-700 transition">Get Official APK</a>
+                                <button onclick="location.hash='#home'" class="px-10 py-6 bg-zinc-800 text-white font-black rounded-[2rem] uppercase text-xs tracking-widest">Back to Store</button>
+                            </div>
+                        </div>
+                    </div>`;
+            } catch(e) { container.innerHTML = "Error loading app details."; }
+        }
+
+        // 5. USER PUBLISH LOGIC (WORKABLE)
+        document.getElementById('form-submit').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-publish');
+            btn.disabled = true; btn.innerHTML = "Uploading...";
+
+            try {
+                const Sub = Parse.Object.extend("Submissions");
+                const s = new Sub();
+                const iconFile = document.getElementById('sub-icon').files[0];
+                const iconBase64 = iconFile ? await toBase64(iconFile) : "";
+
+                await s.save({
+                    name: document.getElementById('sub-name').value,
+                    dl: document.getElementById('sub-url').value,
+                    desc: document.getElementById('sub-desc').value,
+                    user: document.getElementById('sub-user').value,
+                    icon: iconBase64
+                });
+                alert("Success! Your app is now under review.");
+                location.hash = '#home';
+            } catch(err) { alert("Error: " + err.message); }
+            finally { btn.disabled = false; btn.innerText = "Push Submission"; }
+        });
+
+        // 6. ADMIN DASHBOARD
+        const PASS = "admingamestallowner5216";
+        function authAdmin() {
+            if(document.getElementById('admin-password').value === PASS) {
+                document.getElementById('admin-gate').classList.add('hidden');
+                document.getElementById('admin-dash').classList.remove('hidden');
+                switchAdminTab('inbox');
+            } else alert("Invalid Passkey");
+        }
+
+        function switchAdminTab(t) {
+            document.querySelectorAll('.admin-view-pane').forEach(v => v.classList.add('hidden'));
+            document.querySelectorAll('.admin-tab-control').forEach(b => b.classList.remove('active'));
+            document.getElementById(`pane-${t}`).classList.remove('hidden');
+            document.getElementById(`btn-${t}`).classList.add('active');
+            if(t === 'inbox') fetchInbox();
+            if(t === 'manage') fetchManage();
+        }
+
+        async function fetchInbox() {
+            const container = document.getElementById('pane-inbox');
+            const res = await new Parse.Query("Submissions").find();
+            container.innerHTML = res.map(s => `
+                <div class="bg-zinc-900 border border-zinc-800 p-8 rounded-[3rem] flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <img src="${s.get('icon') || ''}" class="w-12 h-12 rounded-lg object-cover">
+                        <h4 class="text-3xl text-white italic font-bangers uppercase">${s.get('name')}</h4>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="approveSub('${s.id}')" class="px-6 py-3 bg-green-600 rounded-xl font-bold uppercase text-xs">Approve</button>
+                        <button onclick="deleteRow('Submissions','${s.id}')" class="px-6 py-3 bg-red-600/10 text-red-500 border border-red-900 rounded-xl font-bold uppercase text-xs">Reject</button>
+                    </div>
+                </div>`).join('') || "Inbox Clear.";
+        }
+
+        async function fetchManage() {
+            const container = document.getElementById('manage-list');
+            const res = await new Parse.Query("AppDatabase").find();
+            container.innerHTML = res.map(app => `
+                <div class="bg-zinc-900 p-6 rounded-[2rem] flex justify-between items-center border border-zinc-800">
+                    <div class="flex items-center gap-4">
+                         <img src="${app.get('icon') || ''}" class="w-10 h-10 rounded-lg object-cover grayscale">
+                         <span class="font-bold text-white uppercase italic tracking-tighter">${app.get('name')}</span>
+                    </div>
+                    <div class="flex gap-4">
+                        <button onclick="openEditor('${app.id}')" class="text-blue-500 hover:text-white transition uppercase text-xs font-black">Edit</button>
+                        <button onclick="deleteRow('AppDatabase','${app.id}')" class="text-red-500"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`).join('');
+        }
+
+        // 7. ADMIN PUBLISH LOGIC (WORKABLE)
+        document.getElementById('form-admin-add').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-admin-publish');
+            btn.disabled = true; btn.innerHTML = "Publishing...";
+
+            try {
+                const App = Parse.Object.extend("AppDatabase");
+                const a = new App();
+                const iconFile = document.getElementById('add-icon').files[0];
+                const iconBase64 = iconFile ? await toBase64(iconFile) : "";
+
+                await a.save({
+                    name: document.getElementById('add-name').value,
+                    size: document.getElementById('add-size').value,
+                    download: document.getElementById('add-url').value,
+                    desc: document.getElementById('add-desc').value,
+                    icon: iconBase64
+                });
+                alert("Published Live!");
+                location.hash = "#home";
+            } catch(err) { alert(err.message); }
+            finally { btn.disabled = false; btn.innerText = "Publish Globally"; }
+        });
+
+        // 8. ADMIN EDITING LOGIC
+        function openEditor(id) {
+            const app = appsCache.find(a => a.id === id);
+            currentEditId = id;
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-name').value = app.get('name');
+            document.getElementById('edit-size').value = app.get('size');
+            document.getElementById('edit-url').value = app.get('download');
+            document.getElementById('edit-desc').value = app.get('desc');
+            document.getElementById('editor-modal').classList.remove('hidden');
+        }
+
+        function closeEditor() { document.getElementById('editor-modal').classList.add('hidden'); }
+
+        document.getElementById('form-admin-edit').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const q = new Parse.Query("AppDatabase");
+                const app = await q.get(document.getElementById('edit-id').value);
+                const iconFile = document.getElementById('edit-icon').files[0];
+                
+                const updates = {
+                    name: document.getElementById('edit-name').value,
+                    size: document.getElementById('edit-size').value,
+                    download: document.getElementById('edit-url').value,
+                    desc: document.getElementById('edit-desc').value
+                };
+                if(iconFile) updates.icon = await toBase64(iconFile);
+
+                await app.save(updates);
+                alert("Updated.");
+                closeEditor();
+                fetchManage();
+            } catch(e) { alert(e.message); }
+        });
+
+        // 9. ACTIONS & UTILS
+        async function approveSub(id) {
+            const sub = await new Parse.Query("Submissions").get(id);
+            const App = Parse.Object.extend("AppDatabase");
+            const a = new App();
+            await a.save({ 
+                name: sub.get('name'), download: sub.get('dl'), 
+                desc: sub.get('desc'), size: '72MB', icon: sub.get('icon') 
+            });
+            await sub.destroy();
+            fetchInbox();
+        }
+
+        async function deleteRow(cls, id) {
+            if(!confirm("Purge data?")) return;
+            const obj = await new Parse.Query(cls).get(id);
+            await obj.destroy();
+            cls === 'Submissions' ? fetchInbox() : fetchManage();
+        }
+    </script>
+</body>
+</html>
